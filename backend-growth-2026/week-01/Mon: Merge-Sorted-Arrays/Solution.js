@@ -1,3 +1,5 @@
+/*My first Approach*/
+
 var merge = function (nums1, m, nums2, n) {
   (m == 0) ? (nums1.splice(0, nums1.length, ...nums2.slice(0, n)), n = 0) : nums1.splice(m);
   for (var i = 0, j = 0; i < m + n; i++) {
@@ -33,3 +35,25 @@ n = 1;
 
 merge(nums1, m, nums2, n);
 console.log('ending', nums1); // Output: [1]
+
+
+
+
+/*Best Approach*/
+var merge = function (nums1, m, nums2, n) {
+  let i = m - 1;
+  let j = n - 1;
+  let k = m + n - 1;
+  
+  while (i >= 0 && j >= 0) {
+    if (nums1[i] > nums2[j]) {
+      nums1[k--] = nums1[i--];
+    } else {
+      nums1[k--] = nums2[j--];
+    }
+  }
+
+  while (j >= 0) {
+    nums1[k--] = nums2[j--];
+  }
+};
