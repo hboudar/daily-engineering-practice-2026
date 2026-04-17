@@ -1,0 +1,15 @@
+# Gitignore file for Node.js projects
+
+# Ignore node_modules & package-lock.json
+node_modules/
+package-lock.json
+
+# Ignore logslogs/
+*.log
+
+# Ignore environment variables
+.env
+
+# Ignore build output
+dist/
+build/
