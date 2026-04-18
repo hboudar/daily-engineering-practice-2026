@@ -18,9 +18,14 @@ export async function readTasks(): Promise<Task[]> {
     const data = await fs.readFile(TASKS_FILE_PATH, "utf-8");
     const parsed = JSON.parse(data);
 
+    if (!Array.isArray(parsed) || !parsed.every(item => typeof item === 'object' && item !== null)) {
+      throw new Error("Invalid task data format");
+    }
+
     return z.array(TaskSchema).parse(parsed);
   } catch (error: any) {
-    if (error.code === "ENOENT") return [];
+    if (error.code === "ENOENT")
+        return [];
     throw error;
   }
 }

@@ -25,40 +25,35 @@ async function main() {
   rl.on('line', (line) => {
     const input = line.trim();
 
-    // first word should be : add, update, delete, list
     const [command, ...args] = input.split(' ');
     if (command === 'add' && args.length > 0) {
       addTask(args.join(' ')).catch((error) => {
-        console.error('Error adding task:', error);
+        console.error(error);
       });
     } else if (command === 'update' && args.length >= 2) {
         const [id, ...descriptionParts] = args;
         const newDescription = descriptionParts.join(' ');
         updateTask(id, newDescription).catch((error) => {
-          console.error('Error updating task:', error);
+          console.error(error);
         });
     } else if ((command === 'mark-done' || command === 'mark-in-progress') && args.length === 1) {
       const id = args[0];
       const newStatus = command === 'mark-done' ? 'done' : 'in-progress';
       updateTask(id, newStatus).catch((error) => {
-        console.error('Error updating task status:', error);
+        console.error(error);
       });
     } else if (command === 'delete' && args.length === 1) {
         deleteTask(args[0]).catch((error) => {
-            console.error('Error deleting task:', error);
+            console.error(error);
         });
-    } else if (command === 'list') {
-        if (args.length === 1) {
-            listTasksWithStatus(args[0]).catch((error) => {
-                console.error('Error listing tasks:', error);
-            });
-        } else {
-            listTasks().catch((error) => {
-                console.error('Error listing tasks:', error);
-            });
-        }
+    } else if (command === 'list' && args.length <= 1) {
+        (args.length === 1) ? listTasksWithStatus(args[0]).catch((error) => {
+            console.error('Error listing tasks with status:', error);
+        }) : listTasks().catch((error) => {
+            console.error(error);
+        });
     } else {
-      console.log(`Invalid command: '${command}'`);
+      console.log(`Invalid command: ${input}`);
     }
 
     rl.prompt();
