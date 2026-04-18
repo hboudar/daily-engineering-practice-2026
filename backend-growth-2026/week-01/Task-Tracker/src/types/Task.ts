@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const TaskStatusSchema = z.enum(["todo", "in-progress", "done"]);
+export const TaskStatusSchema = z.enum(['todo', 'in-progress', 'done']);
 
 export type TaskStatus = z.infer<typeof TaskStatusSchema>;
 

@@ -31,12 +31,10 @@ async function main() {
     try {
       if (command === 'add' && args.length > 0) {
         await addTask(args.join(' '));
-
       } else if (command === 'update' && args.length >= 2) {
         const [id, ...descriptionParts] = args;
         const newDescription = descriptionParts.join(' ');
         await updateTask(id, { description: newDescription });
-
       } else if (
         (command === 'mark-done' || command === 'mark-in-progress') &&
         args.length === 1
@@ -44,17 +42,14 @@ async function main() {
         const id = args[0];
         const newStatus = command === 'mark-done' ? 'done' : 'in-progress';
         await updateTask(id, { status: newStatus });
-
       } else if (command === 'delete' && args.length === 1) {
         await deleteTask(args[0]);
-
       } else if (command === 'list' && args.length <= 1) {
         if (args.length === 1) {
           await listTasksWithStatus(args[0]);
         } else {
           await listTasks();
         }
-
       } else {
         console.log(`Invalid command: ${input}`);
       }
@@ -76,6 +71,9 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('An error occurred:', error instanceof Error ? error.message : error);
+  console.error(
+    'An error occurred:',
+    error instanceof Error ? error.message : error,
+  );
   process.exit(1);
 });

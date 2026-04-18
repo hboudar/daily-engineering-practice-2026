@@ -1,4 +1,4 @@
-import { readTasks, writeTasks } from "../utils/readWriteTask.js";
+import { readTasks, writeTasks } from '../utils/readWriteTask.js';
 
 export async function deleteTask(id: string): Promise<void> {
   const tasks = await readTasks();
