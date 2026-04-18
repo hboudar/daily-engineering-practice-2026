@@ -1,12 +1,18 @@
-import { createFileIfMissing } from './utils/CreateFile.js';
+import path from 'node:path';
 import readline from 'node:readline/promises';
+import { createFileIfMissing } from './utils/CreateFile.js';
 import { addTask } from './commands/addTask.js';
 import { deleteTask } from './commands/deleteTask.js';
 import { listTasks, listTasksWithStatus } from './commands/listTask.js';
 
-async function main() {
-  await createFileIfMissing('tasks.json');
+export const DATA_DIR = path.resolve(
+  process.env.DATA_DIR ?? path.resolve(process.cwd(), 'dist')
+);
 
+export const TASKS_FILE_PATH = path.join(DATA_DIR, 'tasks.json');
+
+async function main() {
+  await createFileIfMissing(TASKS_FILE_PATH);
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,

@@ -1,16 +1,18 @@
-import { open } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 
 export async function createFileIfMissing(filePath: string): Promise<void> {
   try {
-    const fileHandle = await open(filePath, 'wx', 0o644);
-    await fileHandle.close();
+    await writeFile(filePath, '[]', {
+      encoding: 'utf-8',
+      flag: 'wx',
+      mode: 0o644,
+    });
 
     console.log(`File created: ${filePath}`);
-    return ;
   } catch (error: any) {
     if (error?.code === 'EEXIST') {
       console.log(`File already exists: ${filePath}`);
-      return ;
+      return;
     }
 
     throw error;
