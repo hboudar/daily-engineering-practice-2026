@@ -1,50 +1,63 @@
-import { addTask } from "./commands/AddTask.js";
-import { createFileIfMissing } from "./commands/CreateFile.js";
+import { createFileIfMissing } from './utils/CreateFile.js';
 import readline from 'node:readline/promises';
-
+import { addTask } from './commands/addTask.js';
+import { deleteTask } from './commands/deleteTask.js';
+import { listTasks, listTasksWithStatus } from './commands/listTask.js';
 
 async function main() {
-    await createFileIfMissing('tasks.json');
+  await createFileIfMissing('tasks.json');
 
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-        prompt: 'task-cli> ',
-    });
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: 'task-cli> ',
+  });
 
-    rl.prompt(); // Start the prompt
+  rl.prompt(); // Start the prompt
 
-    rl.on('line', (line) => { // This event is emitted whenever the user inputs a line and presses Enter.
-        const input = line.trim();
+  rl.on('line', (line) => {
+    // This event is emitted whenever the user inputs a line and presses Enter.
+    const input = line.trim();
 
-        // first word should be : add, update, delete, list
-        const [command, ...args] = input.split(' ');
-        if (command === 'add' && args.length > 0) {
-            addTask(args.join(' ')).catch((error) => {
-                console.error('Error adding task:', error);
+    // first word should be : add, update, delete, list
+    const [command, ...args] = input.split(' ');
+    if (command === 'add' && args.length > 0) {
+      addTask(args.join(' ')).catch((error) => {
+        console.error('Error adding task:', error);
+      });
+    } else if (command === 'update') {
+    } else if (command === 'delete' && args.length === 1) {
+        deleteTask(args[0]).catch((error) => {
+            console.error('Error deleting task:', error);
+        });
+    } else if (command === 'list') {
+        if (args.length === 1) {
+            listTasksWithStatus(args[0]).catch((error) => {
+                console.error('Error listing tasks:', error);
             });
         } else {
-            console.log(`Invalid command: '${command}'`);
+            listTasks().catch((error) => {
+                console.error('Error listing tasks:', error);
+            });
         }
+    } else {
+      console.log(`Invalid command: '${command}'`);
+    }
 
-        // console.log(`read: '${input}'`);
-        // console.log(`command: '${command}'`);
-        // console.log(`args: '${args.join(', ')}'`);
-        rl.prompt();
-    });
+    rl.prompt();
+  });
 
-    rl.on('SIGINT', () => { // This event is emitted when the user presses Ctrl+C.
+  rl.on('SIGINT', () => {
     console.log('\nExiting shell...');
     rl.close();
-    });
+  });
 
-    rl.on('close', () => { // This event is emitted when the readline interface is closed, either by the user pressing Ctrl+C or by calling rl.close().
-        process.exit(0);
-    });
-
+  rl.on('close', () => {
+    process.exit(0);
+  });
 }
 
 main().catch((error) => {
-    console.error('An error occurred:', error);
-    process.exit(1);
+  console.error('An error occurred:', error);
+  process.exit(1);
 });
