@@ -1,4 +1,4 @@
-Tuesday — Backend mini-problem
+Backend mini-problem
 
 Goal: train backend-shaped reasoning, not just algorithms.
 

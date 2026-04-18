@@ -2,6 +2,7 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { createFileIfMissing } from './utils/CreateFile.js';
 import { addTask } from './commands/addTask.js';
+import { updateTask } from './commands/updateTask.js';
 import { deleteTask } from './commands/deleteTask.js';
 import { listTasks, listTasksWithStatus } from './commands/listTask.js';
 
@@ -19,10 +20,9 @@ async function main() {
     prompt: 'task-cli> ',
   });
 
-  rl.prompt(); // Start the prompt
+  rl.prompt();
 
   rl.on('line', (line) => {
-    // This event is emitted whenever the user inputs a line and presses Enter.
     const input = line.trim();
 
     // first word should be : add, update, delete, list
@@ -32,6 +32,13 @@ async function main() {
         console.error('Error adding task:', error);
       });
     } else if (command === 'update') {
+      if (args.length >= 2) {
+        const [id, ...descriptionParts] = args;
+        const newDescription = descriptionParts.join(' ');
+        updateTask(id, newDescription).catch((error) => {
+          console.error('Error updating task:', error);
+        });
+      }
     } else if (command === 'delete' && args.length === 1) {
         deleteTask(args[0]).catch((error) => {
             console.error('Error deleting task:', error);
