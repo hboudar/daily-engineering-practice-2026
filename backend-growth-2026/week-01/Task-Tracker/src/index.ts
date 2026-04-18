@@ -31,14 +31,18 @@ async function main() {
       addTask(args.join(' ')).catch((error) => {
         console.error('Error adding task:', error);
       });
-    } else if (command === 'update') {
-      if (args.length >= 2) {
+    } else if (command === 'update' && args.length >= 2) {
         const [id, ...descriptionParts] = args;
         const newDescription = descriptionParts.join(' ');
         updateTask(id, newDescription).catch((error) => {
           console.error('Error updating task:', error);
         });
-      }
+    } else if ((command === 'mark-done' || command === 'mark-in-progress') && args.length === 1) {
+      const id = args[0];
+      const newStatus = command === 'mark-done' ? 'done' : 'in-progress';
+      updateTask(id, newStatus).catch((error) => {
+        console.error('Error updating task status:', error);
+      });
     } else if (command === 'delete' && args.length === 1) {
         deleteTask(args[0]).catch((error) => {
             console.error('Error deleting task:', error);

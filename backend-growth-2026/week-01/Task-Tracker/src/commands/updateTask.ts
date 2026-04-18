@@ -1,6 +1,6 @@
 import { readTasks, writeTasks } from "../utils/readWriteTask.js";
 
-export async function updateTask(id: string, newDescription: string): Promise<void> {
+export async function updateTask(id: string, newStatus: string): Promise<void> {
     const tasks = await readTasks();
     const taskIndex = tasks.findIndex((task) => task.id === id);
 
@@ -8,8 +8,10 @@ export async function updateTask(id: string, newDescription: string): Promise<vo
         throw new Error(`Task not found: ${id}`);
     }
 
-    tasks[taskIndex].description = newDescription;
-    tasks[taskIndex].updatedAt = new Date().toISOString();
-
+    if (newStatus === 'done' || newStatus === 'in-progress') {
+        tasks[taskIndex].status = newStatus;
+    } else {
+        tasks[taskIndex].description = newStatus;
+    }
     await writeTasks(tasks);
 }
