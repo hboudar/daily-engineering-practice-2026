@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
-import {Task, TaskSchema} from "../types/Task.js";
+import { Task, TaskSchema } from "../types/Task.js";
 import { readTasks, writeTasks } from "../utils/readWriteTask.js";
-import { object } from "zod/v4/mini";
 
 function createTask(title: string): Task {
   const now = new Date().toISOString();
@@ -17,14 +16,24 @@ function createTask(title: string): Task {
 
 export async function addTask(title: string): Promise<Task> {
   try {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      throw new Error("Task description cannot be empty.");
+    }
+
     const tasks = await readTasks();
-    const newTask = createTask(title);
+    const newTask = createTask(trimmedTitle);
 
     tasks.push(newTask);
     await writeTasks(tasks);
 
     return newTask;
   } catch (error) {
-    throw "Error adding task";
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error("Error adding task");
   }
 }

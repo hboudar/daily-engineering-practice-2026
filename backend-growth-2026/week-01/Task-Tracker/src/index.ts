@@ -1,59 +1,65 @@
-import path from 'node:path';
-import readline from 'node:readline/promises';
+import { createInterface } from 'node:readline';
+import { stdin, stdout } from 'node:process';
+import { TASKS_FILE_PATH } from './config.js';
 import { createFileIfMissing } from './utils/CreateFile.js';
 import { addTask } from './commands/addTask.js';
 import { updateTask } from './commands/updateTask.js';
 import { deleteTask } from './commands/deleteTask.js';
 import { listTasks, listTasksWithStatus } from './commands/listTask.js';
 
-export const DATA_DIR = path.resolve(
-  process.env.DATA_DIR ?? path.resolve(process.cwd(), 'dist')
-);
-
-export const TASKS_FILE_PATH = path.join(DATA_DIR, 'tasks.json');
-
 async function main() {
   await createFileIfMissing(TASKS_FILE_PATH);
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
+
+  const rl = createInterface({
+    input: stdin,
+    output: stdout,
     prompt: 'task-cli> ',
   });
 
   rl.prompt();
 
-  rl.on('line', (line) => {
+  rl.on('line', async (line) => {
     const input = line.trim();
 
+    if (!input) {
+      rl.prompt();
+      return;
+    }
+
     const [command, ...args] = input.split(' ');
-    if (command === 'add' && args.length > 0) {
-      addTask(args.join(' ')).catch((error) => {
-        console.error(error);
-      });
-    } else if (command === 'update' && args.length >= 2) {
+
+    try {
+      if (command === 'add' && args.length > 0) {
+        await addTask(args.join(' '));
+
+      } else if (command === 'update' && args.length >= 2) {
         const [id, ...descriptionParts] = args;
         const newDescription = descriptionParts.join(' ');
-        updateTask(id, newDescription).catch((error) => {
-          console.error(error);
-        });
-    } else if ((command === 'mark-done' || command === 'mark-in-progress') && args.length === 1) {
-      const id = args[0];
-      const newStatus = command === 'mark-done' ? 'done' : 'in-progress';
-      updateTask(id, newStatus).catch((error) => {
-        console.error(error);
-      });
-    } else if (command === 'delete' && args.length === 1) {
-        deleteTask(args[0]).catch((error) => {
-            console.error(error);
-        });
-    } else if (command === 'list' && args.length <= 1) {
-        (args.length === 1) ? listTasksWithStatus(args[0]).catch((error) => {
-            console.error('Error listing tasks with status:', error);
-        }) : listTasks().catch((error) => {
-            console.error(error);
-        });
-    } else {
-      console.log(`Invalid command: ${input}`);
+        await updateTask(id, { description: newDescription });
+
+      } else if (
+        (command === 'mark-done' || command === 'mark-in-progress') &&
+        args.length === 1
+      ) {
+        const id = args[0];
+        const newStatus = command === 'mark-done' ? 'done' : 'in-progress';
+        await updateTask(id, { status: newStatus });
+
+      } else if (command === 'delete' && args.length === 1) {
+        await deleteTask(args[0]);
+
+      } else if (command === 'list' && args.length <= 1) {
+        if (args.length === 1) {
+          await listTasksWithStatus(args[0]);
+        } else {
+          await listTasks();
+        }
+
+      } else {
+        console.log(`Invalid command: ${input}`);
+      }
+    } catch (error) {
+      console.error('Error:', error instanceof Error ? error.message : error);
     }
 
     rl.prompt();
@@ -70,6 +76,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('An error occurred:', error);
+  console.error('An error occurred:', error instanceof Error ? error.message : error);
   process.exit(1);
 });

@@ -1,24 +1,95 @@
-Backend mini-problem
+# Task Tracker CLI
 
-Goal: train backend-shaped reasoning, not just algorithms.
+A small task-tracking CLI built with TypeScript and Node.js. It stores tasks in a local JSON file, uses `readline` for interactive input, and validates data with `zod` before writing it back to disk.
 
-Do:
+## What It Does
 
-1 small backend design/build task
-keep it scoped to 45–90 minutes
+- Add tasks
+- Update task descriptions
+- Mark tasks as `in-progress` or `done`
+- Delete tasks
+- List all tasks or filter by status
+- Create the backing data file automatically when it is missing
 
-Use:
+## Approach
 
-roadmap.sh backend projects
-codingchallenges.fyi
+The project is organized around a simple CLI loop in `src/index.ts`.
 
-roadmap.sh has a backend projects page with project ideas from beginner to advanced. Coding Challenges is explicitly positioned around building real applications, and the site says its challenges are designed to be less than 8 hours and focused on real tools/apps rather than toy problems.
+1. The app starts by resolving the task storage path and ensuring the data file exists.
+2. User input is read from `readline` and split into a command plus arguments.
+3. Command handlers in `src/commands` perform the actual task operations.
+4. Shared file access lives in `src/utils/readWriteTask.ts`, which reads and writes the JSON file.
+5. Task records are validated with `TaskSchema` so malformed data fails fast instead of silently corrupting the store.
 
-Good Tuesday examples:
+This keeps the codebase small, but still separates CLI parsing, persistence, and task validation into distinct layers.
 
-design a paginated GET /posts
-implement rate limiting middleware
-build a tiny URL shortener
-add caching to one endpoint
-design a database schema for orders/users/payments
-build a simple job queue worker
+## Storage Model
+
+Tasks are stored as JSON objects with this shape:
+
+- `id`: unique identifier
+- `description`: task text
+- `status`: `todo`, `in-progress`, or `done`
+- `createdAt`: creation timestamp
+- `updatedAt`: last update timestamp
+
+By default, the file is written to `dist/tasks.json`. You can override the location by setting `DATA_DIR` before running the app.
+
+## Commands
+
+Run the CLI with:
+
+```bash
+npm run dev
+```
+
+Available commands inside the prompt:
+
+- `add <description>`
+- `update <id> <new description>`
+- `mark-in-progress <id>`
+- `mark-done <id>`
+- `delete <id>`
+- `list`
+- `list <status>`
+
+Example session:
+
+```text
+task-cli> add Finish backend practice notes
+task-cli> list
+task-cli> mark-done 2f0f1b5d-5cb8-4b61-8f93-9d8f8dc4b8b4
+task-cli> delete 2f0f1b5d-5cb8-4b61-8f93-9d8f8dc4b8b4
+```
+
+## Project Structure
+
+```bash
+.
+├── package.json
+├── README.md
+├── tsconfig.json
+└── src
+    ├── config.ts
+    ├── index.ts
+    ├── commands
+    │   ├── addTask.ts
+    │   ├── deleteTask.ts
+    │   ├── listTask.ts
+    │   └── updateTask.ts
+    ├── types
+    │   └── Task.ts
+    └── utils
+        ├── CreateFile.ts
+        └── readWriteTask.ts
+```
+
+## Development
+
+Build the project with:
+
+```bash
+npm run build
+```
+
+The compiled output is emitted to `dist/`.

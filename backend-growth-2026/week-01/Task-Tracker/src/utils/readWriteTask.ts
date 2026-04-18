@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { z } from "zod";
 import { Task, TaskSchema } from "../types/Task.js";
-import { DATA_DIR, TASKS_FILE_PATH } from '../index.js';
+import { DATA_DIR, TASKS_FILE_PATH } from '../config.js';
 
 export async function ensureTasksFile() {
   await fs.mkdir(DATA_DIR, { recursive: true });

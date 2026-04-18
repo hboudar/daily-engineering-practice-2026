@@ -11,5 +11,3 @@
   },
   "include": ["src"]
 }
-
-//how to add 'node' types to the tsconfig.json file? 
