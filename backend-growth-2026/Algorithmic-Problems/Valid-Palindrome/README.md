@@ -163,3 +163,9 @@ function toLowerAscii(ch) {
     return ch;
 }
 ```
+
+### Better Solution : Why it is better :
+
+- Time complexity is still: O(n)
+- But space complexity improves from: O(n)
+- to: O(1)
