@@ -1,64 +1,28 @@
-// Both solutions have the same time complexity of O(n) and space complexity of O(1)
-// They both rotate the array in place without using any additional data structures.
-// The first solution uses a single loop to perform the rotation
-// while the second solution uses a nested loop.
+// My first solution :
 
+var rotate = function(nums, k) {
+    const n = nums.length;
 
-
-// My solution (No cap :) ):
-
-var rotate1 = function(nums, k) {
     let current = 0;
-    let target = k % nums.length;
+    let target = k % n;
 
-    for (let i = 0; i < nums.length; i++) {
-        if (current === target) { // 
-            current++; // moving to the next current index
-            target = current; // reseting target to the new current index
+    for (let i = 0; i < n; i++) {
+        
+        if (current === target) { // If we have come back to the starting point, move to the next element
+            current++; // Move to the next element
+            target = current; // Update the target to the new current
         } else {
-            [nums[current], nums[target]] = [nums[target], nums[current]];
+            nums[current] += nums[target];
+            nums[target] = nums[current] - nums[target];
+            nums[current] -= nums[target];
         }
-        target = (target + k) % nums.length; // moving target k steps ahead
+        target = (target + k) % n; // Move the target k steps ahead, wrapping around using modulo
     }
 }
-
-
-// GPT's enhancment of mine :
-
-var rotate2 = function(nums, k) {
-    const n = nums.length;
-    k %= n;
-
-    let moved = 0;
-
-    for (let start = 0; moved < n; start++) {
-        let current = start;
-        let prev = nums[start];
-
-        do {
-            const next = (current + k) % n;
-
-            const temp = nums[next];
-            nums[next] = prev;
-
-            prev = temp;
-            current = next;
-
-            moved++;
-        } while (current !== start);
-    }
-};
 
 // Example usage:
 const nums = [1,2,3,4,5,6]
 const k = 2;
-rotate1(nums, k);
+rotate(nums, k);
 console.log('Rotated array: ',nums);
 
-
-
-// Example usage:
-const nums2 = [1,2,3,4,5,6]
-const k2 = 2;
-rotate2(nums2, k2);
-console.log('Rotated array: ',nums2);
