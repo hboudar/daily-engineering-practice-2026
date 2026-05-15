@@ -11,11 +11,8 @@ var rotate = function(nums, k) {
         if (current === target) { // If we have come back to the starting point, move to the next element
             current++; // Move to the next element
             target = current; // Update the target to the new current
-        } else {
-            nums[current] += nums[target];
-            nums[target] = nums[current] - nums[target];
-            nums[current] -= nums[target];
-        }
+        } else
+            [nums[current], nums[target]] = [nums[target], nums[current]]; // Swap the current element with the target element
         target = (target + k) % n; // Move the target k steps ahead, wrapping around using modulo
     }
 }
